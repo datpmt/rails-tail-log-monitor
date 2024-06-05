@@ -1,0 +1,14 @@
+<div id="log-content" style="background-color: black; color: floralwhite; height: 100vh; overflow-y: scroll; white-space: pre-wrap; padding: 20px; font-family: monospace; word-break: break-all;"><h1 class="position-fixed right-40px color-pink font-size-24px font-weight-900">Log Tail Monitor</h1></div>
+
+<%# <script>
+  document.addEventListener('turbolinks:load', () => {
+    window.addEventListener('beforeunload', () => {
+      console.log('stop')
+      $.ajax({
+        type: 'get',
+        url: '/stop_log_monitoring',
+        async: false
+      });
+    });
+  });
+</script> %>
