@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install google-translate-free
+    $ gem install rails-tail-log-monitor
 
 ## Usage
 Make sure your `package.json` has `actioncable`
