@@ -2,6 +2,8 @@
 
 The rails-tail-log-monitor gem simplifies the process of monitoring server logs by displaying the tail of the log file directly in the terminal window alongside the standard Rails server output. With rails-tail-log-monitor, developers can effortlessly keep track of the most recent log entries without the need for manual log file inspection.
 
+![demo-rails-tail-log-monitor-resize](https://github.com/datpmt/rails-tail-log-monitor/assets/76593070/dc045f09-2909-49f5-a2e8-6761d406bef8)
+
 ## Installation
 
 Add this line to your application's Gemfile:
