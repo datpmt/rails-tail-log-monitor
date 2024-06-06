@@ -1,26 +1,50 @@
 # lib/rails-tail-log-monitor.rb
+
 require 'rails-tail-log-monitor/engine'
-require 'rails-tail-log-monitor/version'
 
 module LogMonitor
   class << self
-    attr_accessor :configuration
+    attr_writer :configuration
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
   end
 
   def self.configure
-    self.configuration ||= Configuration.new
     yield(configuration)
   end
 
-  def self.start
-    LogMonitorService.new
-  end
-
   class Configuration
-    attr_accessor :action_cable_url
+    DEFAULT_ACTION_CABLE_URL = 'ws://localhost:3000/cable'.freeze
+    DEFAULT_KEEP_ALIVE_TIME = 30
+
+    class << self
+      def action_cable_url
+        configuration.action_cable_url
+      end
+
+      def keep_alive_time
+        configuration.keep_alive_time
+      end
+    end
+
+    attr_accessor :action_cable_url, :keep_alive_time
 
     def initialize
-      @action_cable_url = 'ws://default.url/cable'
+      @action_cable_url = DEFAULT_ACTION_CABLE_URL
+      @keep_alive_time = DEFAULT_KEEP_ALIVE_TIME
+    end
+
+    def keep_alive_time=(time)
+      @keep_alive_time = [time.to_i, DEFAULT_KEEP_ALIVE_TIME].max
+    end
+  end
+
+  class Railtie < Rails::Railtie
+    config.after_initialize do
+      ActionCable.server.config.logger = Logger.new(nil)
+      ActionCable.server.config.url = LogMonitor.configuration.action_cable_url
     end
   end
 
@@ -44,14 +68,15 @@ module LogMonitor
       '97' => 'lightgrey'
     }.freeze
 
-    def initialize
-      # $monitoring_thread ||= Thread.new { monitor_log }
-      test_method
+    def self.start_monitoring
+      $monitoring_keep_alive = Time.zone.now.to_i
+      $monitoring_thread ||= Thread.new { monitor_log }
     end
 
-    def self.start_monitoring
-      puts 'start_monitoring xxxx'
-      Thread.new { monitor_log }
+    def self.stop_monitoring
+      $monitoring_thread&.kill
+      $monitoring_thread&.join
+      $monitoring_thread = nil
     end
 
     def self.monitor_log
@@ -60,26 +85,34 @@ module LogMonitor
 
       begin
         loop do
-          new_log_entries = File.open(log_file, 'r') do |file|
-            file.seek(last_position)
-            file.read
-          end.split("\n")
-          ActionCable.server.broadcast('room_channel', { log_entries: new_log_entries.map { |log| ansi_to_html(log) } }) if new_log_entries.present?
+          sleep 0.3
+          if Time.zone.now.to_i - $monitoring_keep_alive > LogMonitor.configuration.keep_alive_time
+            stop_monitoring
+            break
+          else
+            new_log_entries = File.open(log_file, 'r') do |file|
+              file.seek(last_position)
+              file.read
+            end.split("\n", -1)
+            if new_log_entries.present?
+              new_log_entries = new_log_entries[0..-2] if new_log_entries.last.empty?
+              ActionCable.server.broadcast(
+                'log_channel', { log_entries: new_log_entries.map { |log| ansi_to_html(log) } }
+              )
+            end
 
-          last_position = File.size(log_file)
+            last_position = File.size(log_file)
+          end
         end
       rescue StandardError => e
         Rails.logger.error "Error in LogMonitorService: #{e.message}"
       end
     end
 
-    def test_method
-      log_file = Rails.root.join('log', "#{Rails.env}.log")
-      puts "log_file: #{log_file} \n" * 10
-    end
+    def self.ansi_to_html(log)
+      return '<br>' if log.blank?
 
-    def self.ansi_to_html(ansi_text)
-      html_text = ansi_text.dup
+      html_text = log.dup
       html_text = html_text.gsub('<', '&lt;').gsub('>', '&gt;')
       ANSI_TO_HTML.each_key do |code|
         html_text.gsub!(/\e\[#{code}m/, "<span style='color: #{ANSI_TO_HTML[code]};'>")

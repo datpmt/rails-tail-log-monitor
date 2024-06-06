@@ -1,14 +1,31 @@
-<div id="log-content" style="background-color: black; color: floralwhite; height: 100vh; overflow-y: scroll; white-space: pre-wrap; padding: 20px; font-family: monospace; word-break: break-all;"><h1 class="position-fixed right-40px color-pink font-size-24px font-weight-900">Log Tail Monitor</h1></div>
+<div id="log-content"><h1 id="log-title">Log Tail Monitor</h1></div>
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    const consumer = ActionCable.createConsumer();
 
-<%# <script>
-  document.addEventListener('turbolinks:load', () => {
-    window.addEventListener('beforeunload', () => {
-      console.log('stop')
-      $.ajax({
-        type: 'get',
-        url: '/stop_log_monitoring',
-        async: false
-      });
+    const subscription = consumer.subscriptions.create({ channel: "LogChannel" }, {
+      connected() {
+        console.log('Connected.');
+      },
+      disconnected() {
+        console.log('Disconnected.');
+      },
+      received(data) {
+        const logContent = document.getElementById('log-content');
+        data.log_entries.forEach(log => {
+          const logElement = document.createElement('div');
+          logElement.innerHTML = log;
+          logContent.appendChild(logElement);
+        });
+        logContent.scrollTop = logContent.scrollHeight;
+      }
     });
+
+    function recursiveFetch() {
+      subscription.perform('keep_alive');
+      setTimeout(recursiveFetch, 1000);
+    }
+
+    recursiveFetch();
   });
-</script> %>
+</script>

@@ -92,7 +92,6 @@ GEM
       timeout
     net-smtp (0.5.0)
       net-protocol
-    net-ssh (7.2.3)
     nio4r (2.7.1)
     nokogiri (1.16.3-x86_64-darwin)
       racc (~> 1.4)
@@ -182,7 +181,6 @@ PLATFORMS
   x86_64-darwin-22
 
 DEPENDENCIES
-  net-ssh (>= 6.0.2)
   rails (~> 6.1.5)
   rspec
   rubocop (= 1.14.0)

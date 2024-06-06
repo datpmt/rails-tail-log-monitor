@@ -1,0 +1,10 @@
+inherit_from: .rubocop_todo.yml
+AllCops:
+  NewCops: enable
+  DefaultFormatter: progress
+  Exclude:
+    - 'bin/**/*'
+Style/GlobalVars:
+  AllowedVariables:
+    - $monitoring_thread
+    - $monitoring_keep_alive

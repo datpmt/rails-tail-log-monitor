@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
+require 'rails-tail-log-monitor'
 class LogController < ::ApplicationController
   layout 'log'
   def index
-    # LogMonitorService.start_monitoring
+    LogMonitor::LogMonitorService.start_monitoring
   end
-  def show; end
 end

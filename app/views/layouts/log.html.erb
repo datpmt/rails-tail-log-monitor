@@ -1,10 +1,37 @@
+<style>
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #log-title {
+    right: 40px !important;
+    font-weight: 900 !important;
+    font-size: 24px !important;
+    color: #FF0188 !important;
+    position: fixed !important;
+    font-family: monospace;
+  }
+
+  #log-content {
+    background-color: black;
+    color: floralwhite;
+    height: 100vh;
+    overflow-y: scroll;
+    white-space: pre-wrap;
+    padding: 20px;
+    font-family: monospace;
+    word-break: break-all;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+</style>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag "example" %>
   </head>
   <body>
     <%= yield %>
