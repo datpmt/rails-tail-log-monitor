@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true'
   }
   s.add_dependency 'rails', '>= 6'
-  s.required_ruby_version = '>= 2.6'
+  s.required_ruby_version = '>= 2.7'
 end
