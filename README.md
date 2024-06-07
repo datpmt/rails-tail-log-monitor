@@ -55,7 +55,7 @@ LogMonitor.configure do |config|
 end
 ```
 
-After installation and configuration, start your Rails application, open `https://localhost:3000/log` URL, and make a few requests. 
+After installation and configuration, start your Rails application, open `http://localhost:3000/log` URL, and make a few requests.
 
 
 ## Contributors
