@@ -71,4 +71,4 @@ I welcome contributions to this project.
 5.  Create a new pull request.
 
 ## License
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+The gem is available as open source under the terms of the [MIT License](LICENSE).
